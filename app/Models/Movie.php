@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -9,9 +10,14 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Movie extends Model
 {
+    use HasFactory;
+
     const TYPE_OLDIE = 'OLDIE';
     const TYPE_NEW_RELEASE = 'NEW_RELEASE';
     const TYPE_NORMAL = 'NORMAL';
+
+    const STATUS_FREE = 'FREE';
+    const STATUS_RENTED = 'RENTED';
 
     /**
      * @var array

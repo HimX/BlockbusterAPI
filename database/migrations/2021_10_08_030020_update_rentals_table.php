@@ -26,6 +26,8 @@ class UpdateRentalsTable extends Migration
      */
     public function down()
     {
-        //
+        Schema::table('rentals', function (Blueprint $table) {
+            $table->dropForeign(['invoice_id']);
+        });
     }
 }
