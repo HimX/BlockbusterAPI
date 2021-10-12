@@ -6,6 +6,7 @@ use App\Models\Client;
 use App\Models\Invoice;
 use App\Models\Rental;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ClientController extends Controller
 {
@@ -36,15 +37,28 @@ class ClientController extends Controller
             return response()->json(['message' => 'There must be a "movies" array for this request'], 400);
         }
 
-        $invoice = new Invoice();
-        $invoice->client()->associate($client);
-        $invoice->saveOrFail();
         $movieInstances = [];
 
-        foreach ($movies as $movie) {
+        foreach ($movies as $index => $movie) {
+            $validator = Validator::make($movie, [
+                'movie_id' => 'required|exists:movies,id',
+                'rental_date' => 'required|date',
+                'devolution_date' => 'required|date|after:rental_date'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'error' => $validator->getMessageBag()->toArray(),
+                    'index' => $index
+                ], 422);
+            }
+
             $movieInstances[] = new Rental($movie);
         }
 
+        $invoice = new Invoice();
+        $invoice->client()->associate($client);
+        $invoice->saveOrFail();
         $invoice->rentals()->saveMany($movieInstances);
         $invoice = Invoice::where('id', $invoice->id)->with('rentals')->get();
         return response()->json($invoice);

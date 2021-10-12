@@ -13,8 +13,8 @@ class RentalController extends Controller
         $invoice = new Invoice($request->all());
         $invoice->save();
         $this->validate($request, [
-            'movie_id' => 'required',
-            'client_id' => 'required',
+            'movie_id' => 'required|exists:movies,id',
+            'client_id' => 'required|exists:clients,id',
             'rental_date' => 'required|date',
             'devolution_date' => 'required|date|after:rental_date'
         ]);
